@@ -1,7 +1,3 @@
-local app = sdk.get_native_singleton("via.Application")
-local via_app_type_definition = sdk.find_type_definition("via.Application")
-local set_MaxFps = via_app_type_definition:get_method("set_MaxFps")
-
 local ____IL2CPP = require("MonsterJournalPage.IL2CPP.IL2CPP")
 local snow = ____IL2CPP.snow
 local via = ____IL2CPP.via
@@ -10,10 +6,10 @@ local config_path = "energy_saver.json"
 
 local fps_option_list = { 30, 60, 90, 120, 144, 165, 240, 600 }
 local config = { townFps = 60, unfocusedFps = 30 }
-local game_status
+local game_status = 1
 
 function get_fps_option()
-    local index = sdk.get_managed_singleton("snow.StmOptionManager"):get_field("_StmOptionDataContainer"):call("getFrameRateOption")
+    local index = snow.StmOptionManager.Instance._StmOptionDataContainer:getFrameRateOption()
     return fps_option_list[index+1]
 end
 
@@ -24,9 +20,9 @@ function game_status_changed(game_status_new)
     local selected_fps_option = get_fps_option()
     if selected_fps_option > config.townFps then
         if game_status == 1 then
-            set_MaxFps:call(app, config.townFps+.0)
+            via.Application:set_MaxFps(config.townFps+.0)
         else
-            set_MaxFps:call(app, selected_fps_option+.0)
+            via.Application:set_MaxFps(selected_fps_option+.0)
         end
     end
 end
@@ -68,10 +64,8 @@ if is_module_available(modMenuModule) then
     local modObj = modUI.OnMenu(name, description, function()
         changed, config.townFps = modUI.Slider("Town Framerate", config.townFps, 10, get_fps_option(), "Set framerate for town.")
 
-        if changed then
-            if game_status == 1 then
-                set_MaxFps:call(app, config.townFps+.0)
-            end
+        if changed and game_status == 1 then
+            via.Application:set_MaxFps(config.townFps+.0)
         end
     end)
 end
