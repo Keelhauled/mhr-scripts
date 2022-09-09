@@ -9,27 +9,24 @@ local modMenuModule = "ModOptionsMenu.ModMenuApi"
 local config_path = "energy_saver.json"
 
 local fps_option_list = { 30, 60, 90, 120, 144, 165, 240, 600 }
-local config = { townFps = 60 }
+local config = { townFps = 60, unfocusedFps = 30 }
 local game_status
 
 function get_fps_option()
-    --local index = sdk.get_managed_singleton("snow.StmOptionManager"):get_field("_StmOptionDataContainer"):call("getFrameRateOption")
-    local index = snow.StmOptionManager.Instance._StmOptionDataContainer.getFrameRateOption()
+    local index = sdk.get_managed_singleton("snow.StmOptionManager"):get_field("_StmOptionDataContainer"):call("getFrameRateOption")
     return fps_option_list[index+1]
 end
 
-function status_changed(new_status)
-    log.debug("Game status: " .. tostring(new_status))
-    game_status = new_status
+function game_status_changed(game_status_new)
+    log.debug("Game status: " .. tostring(game_status_new))
+    game_status = game_status_new
     
     local selected_fps_option = get_fps_option()
     if selected_fps_option > config.townFps then
-        if new_status == 1 then
+        if game_status == 1 then
             set_MaxFps:call(app, config.townFps+.0)
-            --via.Application.Instance.set_MaxFps(config.townFps+.0)
         else
             set_MaxFps:call(app, selected_fps_option+.0)
-            --via.Application.Instance.set_MaxFps(selected_fps_option+.0)
         end
     end
 end
@@ -59,7 +56,7 @@ else
 end
 
 sdk.hook(snow.QuestManager.onChangedGameStatus,
-    function(args) status_changed(sdk.to_int64(args[3])); end,
+    function(args) game_status_changed(sdk.to_int64(args[3])); end,
     function(retval) return retval; end);
 
 if is_module_available(modMenuModule) then
@@ -74,7 +71,6 @@ if is_module_available(modMenuModule) then
         if changed then
             if game_status == 1 then
                 set_MaxFps:call(app, config.townFps+.0)
-                --via.Application.Instance.set_MaxFps(config.townFps+.0)
             end
         end
     end)
