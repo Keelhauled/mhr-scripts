@@ -4,15 +4,17 @@ local via = ____IL2CPP.via
 
 local max_fps = via.Application:get_MaxFps()
 
-function limit_max_fps(args)
-    via.Application:set_MaxFps(40.0)
+local function limit_max_fps(args)
+    if snow.QuestManager.Instance._QuestStatus == 0 then
+        via.Application:set_MaxFps(40.0)
+    end
 end
 
-function reset_max_fps(args)
+local function reset_max_fps(args)
     via.Application:set_MaxFps(max_fps)
 end
 
-function empty_post_func(retval)
+local function empty_post_func(retval)
     return retval
 end
 
