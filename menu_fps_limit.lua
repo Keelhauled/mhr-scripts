@@ -63,10 +63,10 @@ end)()
 
 local snow = metatable.snow
 local app = metatable.via.Application
-
-local max_fps = app:get_MaxFps()
+local max_fps = 600.0
 
 local function limit_max_fps(args)
+    max_fps = app:get_MaxFps()
     if snow.QuestManager.Instance._QuestStatus == 0 then
         app:set_MaxFps(40.0)
     end
