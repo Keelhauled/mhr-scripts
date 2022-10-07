@@ -63,12 +63,23 @@ end)()
 
 local snow = metatable.snow
 local app = metatable.via.Application
+
 local max_fps = 600.0
+local modMenuModule = "ModOptionsMenu.ModMenuApi"
+local config_path = "menu_fps_limit.json"
+local config = { limit = 60 }
+
+local config_file = json.load_file(config_path)
+if config_file ~= nil then
+    config = config_file
+else
+    json.dump_file(config_path, config)
+end
 
 local function limit_max_fps(args)
-    max_fps = app:get_MaxFps()
     if snow.QuestManager.Instance._QuestStatus == 0 then
-        app:set_MaxFps(40.0)
+        max_fps = app:get_MaxFps()
+        app:set_MaxFps(config.limit+.0)
     end
 end
 
@@ -78,6 +89,23 @@ end
 
 local function empty_post_func(retval)
     return retval
+end
+
+function is_module_available(name)
+	if package.loaded[name] then
+		return true;
+	else
+		for _, searcher in ipairs(package.searchers or package.loaders) do
+			local loader = searcher(name);
+
+			if type(loader) == 'function' then
+				package.preload[name] = loader;
+				return true;
+			end
+		end
+
+		return false;
+	end
 end
 
 sdk.hook(
@@ -103,3 +131,15 @@ sdk.hook(
     reset_max_fps,
     empty_post_func
 )
+
+if is_module_available(modMenuModule) then
+    modUI = require(modMenuModule);
+    local text = "Set framerate limit for item box and smithy menus."
+    modUI.OnMenu("Limit Menu Framerate", text, function()
+        _, config.limit = modUI.Slider("Limit", config.limit, 30, 90, text)
+    end)
+end
+
+re.on_config_save(function()
+	json.dump_file(config_path, config);
+end)
