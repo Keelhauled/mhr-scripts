@@ -64,10 +64,10 @@ end)()
 local snow = metatable.snow
 local app = metatable.via.Application
 
-local max_fps = 600.0
 local modMenuModule = "ModOptionsMenu.ModMenuApi"
 local config_path = "menu_fps_limit.json"
 local config = { limit = 60 }
+local fps_option_list = { 30.0, 60.0, 90.0, 120.0, 144.0, 165.0, 240.0, 600.0 }
 
 local config_file = json.load_file(config_path)
 if config_file ~= nil then
@@ -78,13 +78,13 @@ end
 
 local function limit_max_fps(args)
     if snow.QuestManager.Instance._QuestStatus == 0 then
-        max_fps = app:get_MaxFps()
         app:set_MaxFps(config.limit+.0)
     end
 end
 
 local function reset_max_fps(args)
-    app:set_MaxFps(max_fps)
+    local index = snow.StmOptionManager.Instance._StmOptionDataContainer:getFrameRateOption()
+    app:set_MaxFps(fps_option_list[index+1])
 end
 
 local function empty_post_func(retval)
