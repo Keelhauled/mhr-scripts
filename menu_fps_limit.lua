@@ -1,4 +1,6 @@
 local metatable = (function()
+    -- Metatable magic by Stracker
+
     local create_namespace
     local namespace_functions = {}
 
