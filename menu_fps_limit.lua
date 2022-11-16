@@ -77,6 +77,10 @@ else
 end
 
 local function limit_max_fps(args)
+    app:set_MaxFps(config.limit+.0)
+end
+
+local function limit_max_fps_if_in_base(args)
     if snow.QuestManager.Instance._QuestStatus == 0 then
         app:set_MaxFps(config.limit+.0)
     end
@@ -109,25 +113,37 @@ function is_module_available(name)
 end
 
 sdk.hook(
-    snow.gui.fsm.smithy.GuiSmithy.doOpen,
-    limit_max_fps,
+    snow.NpcCamera.requestMediumCloseUpCamera,
+    limit_max_fps_if_in_base,
     empty_post_func
 )
 
 sdk.hook(
-    snow.gui.fsm.smithy.GuiSmithy.doClose,
+    snow.NpcCamera.requestReleaseCamera,
     reset_max_fps,
     empty_post_func
 )
 
 sdk.hook(
     snow.gui.fsm.itembox.GuiItemBoxMenu.doOpen,
-    limit_max_fps,
+    limit_max_fps_if_in_base,
     empty_post_func
 )
 
 sdk.hook(
     snow.gui.fsm.itembox.GuiItemBoxMenu.doClose,
+    reset_max_fps,
+    empty_post_func
+)
+
+sdk.hook(
+    snow.gui.GuiPauseWindow.doOpen,
+    limit_max_fps,
+    empty_post_func
+)
+
+sdk.hook(
+    snow.gui.GuiPauseWindow.doClose,
     reset_max_fps,
     empty_post_func
 )
