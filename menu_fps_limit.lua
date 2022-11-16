@@ -66,7 +66,7 @@ local app = metatable.via.Application
 
 local modMenuModule = "ModOptionsMenu.ModMenuApi"
 local config_path = "menu_fps_limit.json"
-local config = { limit = 60 }
+local config = { limit = 40 }
 local fps_option_list = { 30.0, 60.0, 90.0, 120.0, 144.0, 165.0, 240.0, 600.0 }
 
 local config_file = json.load_file(config_path)
