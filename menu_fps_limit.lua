@@ -150,6 +150,18 @@ sdk.hook(
     empty_post_func
 )
 
+sdk.hook(
+    snow.gui.GuiQuestBoard.doOpen,
+    limit_max_fps_if_in_base,
+    empty_post_func
+)
+
+sdk.hook(
+    snow.gui.GuiQuestBoard.cancelMenuCommon,
+    reset_max_fps,
+    empty_post_func
+)
+
 if is_module_available(modMenuModule) then
     modUI = require(modMenuModule);
     local text = "Set framerate limit for item box and smithy menus."
